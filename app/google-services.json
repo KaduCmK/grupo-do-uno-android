@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1002756454440",
+    "project_id": "grupo-do-uno",
+    "storage_bucket": "grupo-do-uno.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1002756454440:android:cc56ce34cbc5f173965d1d",
+        "android_client_info": {
+          "package_name": "io.github.kaducmk.grupodouno"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD9zu1cmK2UByKpNUzl-1DVo_F1ogyw5Ts"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
