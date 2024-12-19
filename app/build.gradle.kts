@@ -10,17 +10,17 @@ plugins {
 
 android {
     signingConfigs {
-        getByName("debug") {
-            storeFile = file("C:\\Users\\carlos.alves.SECONCI\\keystore.jks")
+        create("io.github.kaducmk.grupodouno.debug") {
+            storeFile = file("C:\\Users\\carlos.alves.SECONCI\\pica.jks")
             storePassword = "Kadu2014"
-            keyAlias = "debug"
-            keyPassword = "Kadu2014"
+            keyAlias = "io.github.kaducmk.grupodouno.debug"
+            keyPassword = "@Kadu2014"
         }
-        create("personal") {
-            storeFile = file("C:\\Users\\carlos.alves.SECONCI\\keystore.jks")
+        create("io.github.kaducmk.grupodouno.release") {
+            storeFile = file("C:\\Users\\carlos.alves.SECONCI\\pica.jks")
             storePassword = "Kadu2014"
-            keyAlias = "personal"
-            keyPassword = "Kadu2014"
+            keyAlias = "io.github.kaducmk.grupodouno.release"
+            keyPassword = "@Kadu2014"
         }
     }
     namespace = "io.github.kaducmk.grupodouno"
@@ -30,11 +30,11 @@ android {
         applicationId = "io.github.kaducmk.grupodouno"
         minSdk = 28
         targetSdk = 35
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 2
+        versionName = "0.1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        signingConfig = signingConfigs.getByName("personal")
+        signingConfig = signingConfigs.getByName("io.github.kaducmk.grupodouno.debug")
     }
 
     buildTypes {
@@ -44,6 +44,10 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            signingConfig = signingConfigs.getByName("io.github.kaducmk.grupodouno.release")
+        }
+        getByName("debug") {
+            signingConfig = signingConfigs.getByName("io.github.kaducmk.grupodouno.debug")
         }
     }
     compileOptions {

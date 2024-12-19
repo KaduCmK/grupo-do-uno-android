@@ -5,24 +5,20 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Remove
-import androidx.compose.material3.Button
 import androidx.compose.material3.Card
-import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -31,7 +27,6 @@ import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -40,11 +35,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import coil3.compose.AsyncImagePainter
-import coil3.compose.rememberAsyncImagePainter
-import coil3.request.ImageRequest
-import coil3.request.crossfade
-import coil3.size.Size
+import coil.compose.AsyncImagePainter
+import coil.compose.rememberAsyncImagePainter
+import coil.request.ImageRequest
+import coil.size.Size
 import io.github.kaducmk.grupodouno.core.data.model.Usuario
 import io.github.kaducmk.grupodouno.core.data.model.Vitoria
 import io.github.kaducmk.grupodouno.home.data.HomeUiEvent
@@ -52,6 +46,8 @@ import io.github.kaducmk.grupodouno.home.data.LineParametersDefaults
 import io.github.kaducmk.grupodouno.home.presentation.components.timeline.TimelineNode
 import io.github.kaducmk.grupodouno.home.presentation.components.timeline.TimelineNodePosition
 import io.github.kaducmk.grupodouno.ui.theme.GrupoDoUnoTheme
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 @Composable
 fun JogadorCard(modifier: Modifier = Modifier, usuario: Usuario, uiEvent: (HomeUiEvent) -> Unit) {
@@ -63,11 +59,11 @@ fun JogadorCard(modifier: Modifier = Modifier, usuario: Usuario, uiEvent: (HomeU
             .build()
     )
 
-    Card(modifier = modifier.width(165.dp)) {
+    Card(modifier = modifier.fillMaxWidth()) {
         ElevatedCard {
             Row(
                 modifier = Modifier
-                    .padding(4.dp)
+                    .padding(vertical = 4.dp, horizontal = 8.dp)
                     .fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
@@ -86,7 +82,7 @@ fun JogadorCard(modifier: Modifier = Modifier, usuario: Usuario, uiEvent: (HomeU
                         contentDescription = null,
                         contentScale = ContentScale.FillBounds
                     )
-                    if (painter.state.collectAsState().value !is AsyncImagePainter.State.Success) {
+                    if (painter.state !is AsyncImagePainter.State.Success) {
                         Icon(
                             modifier = Modifier.size(36.dp),
                             imageVector = Icons.Default.Person,
@@ -133,9 +129,9 @@ fun JogadorCard(modifier: Modifier = Modifier, usuario: Usuario, uiEvent: (HomeU
         LazyColumn(
             modifier = Modifier
                 .height(90.dp)
-                .fillMaxWidth()
-                .padding(horizontal = 6.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+                .fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            contentPadding = PaddingValues(8.dp)
         ) {
             itemsIndexed(
                 items = usuario.vitorias,
@@ -154,7 +150,7 @@ fun JogadorCard(modifier: Modifier = Modifier, usuario: Usuario, uiEvent: (HomeU
                 ) {
                     Text(
                         modifier = it,
-                        text = vitoria.data,
+                        text = vitoria.data.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")),
                         style = MaterialTheme.typography.bodyMedium,
                     )
                 }
@@ -163,19 +159,19 @@ fun JogadorCard(modifier: Modifier = Modifier, usuario: Usuario, uiEvent: (HomeU
     }
 }
 
-@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, device = "spec:width=2220dp,height=600dp")
-@Preview(device = "spec:width=2220dp,height=600dp")
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Preview()
 @Composable
 private fun JogadorCardPreview() {
     GrupoDoUnoTheme {
         JogadorCard(
-            modifier = Modifier,
+            modifier = Modifier.padding(horizontal = 32.dp),
             usuario = Usuario(
                 "0", "Carlos", "", "", listOf(
-                    Vitoria("1", "01/01/2021"),
-                    Vitoria("2", "02/01/2021"),
-                    Vitoria("3", "03/01/2021"),
-                    Vitoria("4", "04/01/2021")
+                    Vitoria("1", LocalDateTime.now()),
+                    Vitoria("2", LocalDateTime.now()),
+                    Vitoria("3", LocalDateTime.now()),
+                    Vitoria("4", LocalDateTime.now())
                 )
             ),
             {}

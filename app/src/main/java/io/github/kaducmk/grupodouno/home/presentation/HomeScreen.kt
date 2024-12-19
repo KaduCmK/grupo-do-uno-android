@@ -1,20 +1,14 @@
 package io.github.kaducmk.grupodouno.home.presentation
 
 import android.content.res.Configuration
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Person
@@ -39,7 +33,9 @@ import io.github.kaducmk.grupodouno.R
 import io.github.kaducmk.grupodouno.core.data.model.Usuario
 import io.github.kaducmk.grupodouno.home.data.HomeUiEvent
 import io.github.kaducmk.grupodouno.home.data.HomeUiState
-import io.github.kaducmk.grupodouno.home.presentation.components.JogadorCard
+import io.github.kaducmk.grupodouno.home.presentation.components.Historico
+import io.github.kaducmk.grupodouno.home.presentation.components.JogadoresPager
+import io.github.kaducmk.grupodouno.home.presentation.components.TopBar
 import io.github.kaducmk.grupodouno.ui.theme.GrupoDoUnoTheme
 
 @Composable
@@ -50,11 +46,19 @@ fun HomeScreen(
     uiEvent: (HomeUiEvent) -> Unit
 ) {
     val context = LocalContext.current
+
     LaunchedEffect(Unit) {
         if (uiState !is HomeUiState.Unauthenticated) {
             uiEvent(HomeUiEvent.OnGetData)
         }
     }
+    val vitoriasMap = (uiState as? HomeUiState.Success)?.data
+        ?.flatMap { usuario ->
+            // vai iterar a lista de vitorias dentro da lista de usuarios e mapear a vitoria para
+            // o nome do usuario
+            usuario.vitorias.map { it to usuario.displayName }
+        }
+        ?.sortedByDescending { it.first.data }
 
     Surface {
         Column(
@@ -62,31 +66,7 @@ fun HomeScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 48.dp, start = 8.dp, end = 8.dp),
-            ) {
-                Text(
-                    text = "Uno",
-                    style = MaterialTheme.typography.headlineMedium,
-                    fontWeight = FontWeight.SemiBold
-                )
-            }
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 8.dp, top = 8.dp, bottom = 24.dp)
-            ) {
-                Text(
-                    text = "Último vencedor: ",
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.SemiBold
-                )
-                AnimatedVisibility(uiState is HomeUiState.Success) {
-                    Text(text = "Fulano", style = MaterialTheme.typography.titleLarge)
-                }
-            }
+            TopBar(uiState = uiState, historico = vitoriasMap ?: emptyList())
             when (uiState) {
                 is HomeUiState.Unauthenticated -> {
                     Button({ uiEvent(HomeUiEvent.OnLogin(context)) }) {
@@ -117,16 +97,8 @@ fun HomeScreen(
                             fontWeight = FontWeight.SemiBold
                         )
                     }
-                    LazyRow(
-                        modifier = Modifier.fillMaxWidth(),
-                        contentPadding = PaddingValues(horizontal = 8.dp),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        items(items = uiState.data, key = { it.uid!! }) { usuario ->
-                            JogadorCard(usuario = usuario, uiEvent = uiEvent)
-                        }
-                    }
-                    Spacer(Modifier.height(16.dp))
+                    JogadoresPager(uiState = uiState, uiEvent = uiEvent)
+                    Spacer(Modifier.height(8.dp))
                     Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
                         Icon(
                             imageVector = Icons.Default.History,
@@ -138,7 +110,7 @@ fun HomeScreen(
                             fontWeight = FontWeight.SemiBold
                         )
                     }
-
+                    Historico(historico = vitoriasMap ?: emptyList())
                 }
 
                 is HomeUiState.Error -> {
@@ -160,7 +132,25 @@ private fun HomeScreenPreview() {
     GrupoDoUnoTheme {
         HomeScreen(
             navController = rememberNavController(),
-            uiState = HomeUiState.Unauthenticated,
+            uiState = HomeUiState.Success(
+                data = listOf(
+                    Usuario(
+                        uid = "1",
+                        displayName = "Fulano",
+                        email = ""
+                    ),
+                    Usuario(
+                        uid = "2",
+                        displayName = "Ciclano",
+                        email = ""
+                    ),
+                    Usuario(
+                        uid = "3",
+                        displayName = "Beltrano",
+                        email = ""
+                    )
+                )
+            ),
             uiEvent = {})
     }
 }

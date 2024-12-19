@@ -6,6 +6,8 @@ import com.google.firebase.firestore.firestore
 import io.github.kaducmk.grupodouno.core.data.model.Usuario
 import io.github.kaducmk.grupodouno.core.data.model.Vitoria
 import kotlinx.coroutines.tasks.await
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
 class FirestoreService @Inject constructor() {
@@ -21,9 +23,10 @@ class FirestoreService @Inject constructor() {
                 val dto = doc.toObject(Usuario::class.java)
                 val vitorias =
                     doc.reference.collection("vitorias").get().await().mapNotNull { vitoriaDoc ->
+                        val data = vitoriaDoc.get("data", String::class.java)!!
                         Vitoria(
                             id = vitoriaDoc.id,
-                            data = vitoriaDoc.get("data", String::class.java) ?: "",
+                            data = LocalDateTime.parse(data),
                         )
                     }
 
@@ -61,7 +64,7 @@ class FirestoreService @Inject constructor() {
             fb.collection("users")
                 .document(usuario.uid!!)
                 .collection("vitorias")
-                .add(mapOf("data" to "2021-09-01"))
+                .add(mapOf("data" to LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)))
                 .await()
 
             Log.d("FirestoreService", "Vitoria added")
